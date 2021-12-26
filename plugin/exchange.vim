@@ -1,10 +1,6 @@
 let s:enable_highlighting = 1
 
 function! s:exchange(x, y, reverse, expand)
-	let reg_z = s:save_reg('z')
-	let reg_unnamed = s:save_reg('"')
-	let reg_star = s:save_reg('*')
-	let reg_plus = s:save_reg('+')
 	let selection = &selection
 	set selection=inclusive
 
@@ -46,10 +42,6 @@ function! s:exchange(x, y, reverse, expand)
 	endif
 
 	let &selection = selection
-	call s:restore_reg('z', reg_z)
-	call s:restore_reg('"', reg_unnamed)
-	call s:restore_reg('*', reg_star)
-	call s:restore_reg('+', reg_plus)
 endfunction
 
 function! s:fix_cursor(x, y, reverse)
@@ -104,9 +96,6 @@ function! s:reindent(start, lines, new_indent)
 endfunction
 
 function! s:exchange_get(type, vis)
-	let reg = s:save_reg('"')
-	let reg_star = s:save_reg('*')
-	let reg_plus = s:save_reg('+')
 	if a:vis
 		let type = a:type
 		let [start, end] = s:store_pos("'<", "'>")
@@ -133,9 +122,6 @@ function! s:exchange_get(type, vis)
 		let &selection = selection
 	endif
 	let text = getreg('@')
-	call s:restore_reg('"', reg)
-	call s:restore_reg('*', reg_star)
-	call s:restore_reg('+', reg_plus)
 	return {
 	\	'text': text,
 	\	'type': type,
@@ -181,18 +167,6 @@ function! s:exchange_clear()
 		call s:highlight_clear(b:exchange_matches)
 		unlet b:exchange_matches
 	endif
-endfunction
-
-function! s:save_reg(name)
-	try
-		return [getreg(a:name), getregtype(a:name)]
-	catch /.*/
-		return ['', '']
-	endtry
-endfunction
-
-function! s:restore_reg(name, reg)
-	silent! call setreg(a:name, a:reg[0], a:reg[1])
 endfunction
 
 function! s:highlight(exchange)
